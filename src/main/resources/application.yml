@@ -11,7 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     url: jdbc:mysql://localhost:3306/user_db
-    password: T@ilwind
+    password: your-password
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
