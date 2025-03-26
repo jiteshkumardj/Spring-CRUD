@@ -2,58 +2,34 @@ pipeline {
     agent any // Use any available Jenkins agent
 
     environment {
-        MAVEN_HOME = tool 'Maven' // Specify Maven installation path in Jenkins
-        APP_NAME = 'Spring-CRUD-App'   // Application name
-        ARTIFACT_NAME = 'spring-crud.war' // WAR file name for deployment
-    }
-
-    options {
-        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '10')) // Keep logs for 30 days or 10 builds
-        timeout(time: 60, unit: 'MINUTES') // Set pipeline timeout to 1 hour
+        MAVEN_HOME = tool 'Maven' // Specify Maven installation configured in Jenkins
+        APP_NAME = 'Spring-CRUD-App' // Application Name
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 echo 'Checking out code from Git repository...'
-                checkout scm // Automatically checkout code linked to the Multibranch Pipeline job
-            }
-        }
-
-        stage('Prepare Environment') {
-            steps {
-                echo 'Setting up environment...'
-                // Ensure Java and Maven are installed
-                sh 'java -version'
-                sh '${MAVEN_HOME}/bin/mvn -v' // Print Maven version
+                checkout scm // Automatically checks out the repository configured in your Multibranch Pipeline job
             }
         }
 
         stage('Build Application') {
             steps {
                 echo 'Building the Spring application using Maven...'
-                sh "${MAVEN_HOME}/bin/mvn clean package -DskipTests" // Build application and generate WAR file
+                // Maven command for building the application
+                sh "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
             }
             post {
                 success {
-                    echo "Build successful! The WAR file is ready."
+                    echo "Build successful! Artifacts are created in the target directory."
                 }
                 failure {
                     echo "Build failed! Check the logs for details."
                 }
             }
         }
-
-        
-
-        stage('Package Artifact') {
-            steps {
-                echo "Packaging build output..."
-                archiveArtifacts artifacts: "target/${ARTIFACT_NAME}", allowEmptyArchive: false // Archive the WAR file
-            }
-        }
-
-      
+    }
 
     post {
         always {
@@ -61,10 +37,10 @@ pipeline {
             cleanWs() // Clean the workspace after execution
         }
         success {
-            echo 'Pipeline executed successfully!'
+            echo "Pipeline executed successfully for ${APP_NAME}!"
         }
         failure {
-            echo 'Pipeline failed! Investigate and retry.'
+            echo "Pipeline failed! Investigate issues and retry."
         }
     }
 }
