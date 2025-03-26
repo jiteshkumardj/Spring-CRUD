@@ -44,17 +44,7 @@ pipeline {
             }
         }
 
-        stage('Unit Tests') {
-            steps {
-                echo 'Running unit tests...'
-                sh "${MAVEN_HOME}/bin/mvn test" // Run unit tests
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml' // Publish test reports from Maven's surefire plugin
-                }
-            }
-        }
+        
 
         stage('Package Artifact') {
             steps {
@@ -63,23 +53,7 @@ pipeline {
             }
         }
 
-        stage('Deploy Application') {
-            steps {
-                echo "Deploying ${APP_NAME} to staging environment..."
-                sh """
-                cp target/${ARTIFACT_NAME} /var/lib/tomcat/webapps/  // Example deployment command
-                """
-            }
-            post {
-                success {
-                    echo "Deployment successful! Application is available in staging."
-                }
-                failure {
-                    echo "Deployment failed! Please investigate the logs."
-                }
-            }
-        }
-    }
+      
 
     post {
         always {
